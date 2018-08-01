@@ -1,6 +1,6 @@
-#GXChain DES SDK for PHP
+# GXChain DES SDK for PHP
 
-## Install'
+## Install
 
 You can install this library via Composer:
 ```bash
