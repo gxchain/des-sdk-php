@@ -26,7 +26,7 @@ use GXChain\Client\DESMerchantClient;
 $DESMerchantClient = new DESMerchantClient();
 
 $testCase = (object)array(
-    'name' => 'XXX'
+    'name' => 'XXX',
     'idcard' => 'XXXXXXXXXXXXXXXXXX'
 );
 
