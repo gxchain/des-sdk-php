@@ -1,0 +1,31 @@
+{
+    "name": "gxchain/des-sdk-php",
+    "description": "GXChain DES SDK for PHP",
+    "keywords": ["gxchain", "des", "sdk"],
+    "homepage": "https://doc.gxb.io/des/",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "xLogic",
+            "email": "xloigc@qq.com"
+        }
+    ],
+    "minimum-stability": "alpha",
+    "require": {
+        "php": ">=7.1.8",
+        "ext-gmp": "*",
+        "ext-json": "*",
+        "ext-openssl": "*",
+        "bitwasp/secp256k1-php": "^0.2.0",
+        "simplito/elliptic-php": "^1.0"
+    },
+    "require-dev": {
+    },
+    "autoload": {
+        "psr-4": {"GXChain\\": "src/GXChain"},
+        "files": ["src/GXChain/Index.php"]
+    },
+    "repositories": {
+    }
+}
