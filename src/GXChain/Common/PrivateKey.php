@@ -60,7 +60,11 @@ class PrivateKey {
     }
 
     public function sign($msg) {
-        $msg = hash('sha256', Utils::bytes2str($msg));
+        if (is_string($msg)) {
+            $msg = hash('sha256', $msg);
+        } else {
+            $msg = hash('sha256', Utils::bytes2str($msg));
+        }
         $sig = null;
         $sigDER = null;
         while (true) {

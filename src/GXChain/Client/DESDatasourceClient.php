@@ -13,11 +13,13 @@ class DESDatasourceClient {
     private $privateKey;
     private $account_id;
     private $baseURL;
+    private $queryURL;
 
     public function __construct() {
         $this->privateKey = Config::PRIVATE_KEY;
         $this->account_id = Config::ACCOUNT_ID;
-        $this->baseURL = Config::BASE_URL; 
+        $this->baseURL = Config::BASE_URL;
+        $this->queryURL = Config::QUERY_URL;
     }
 
     public function heartbeat($products) {
@@ -25,11 +27,10 @@ class DESDatasourceClient {
         $params = array(
             'account' => $this->account_id,
             'products' => $products,
+            'queryUrl' => $this->queryURL,
             'timestamp' => $timestamp,
-            'signature' => PrivateKey::fromWif($this->privateKey)->sign($this->account_id . '|' . json_encode($products) . '|' . $timestamp)
+            'signature' => PrivateKey::fromWif($this->privateKey)->sign($this->account_id . '|' . json_encode($products) . '|' . $this->queryURL . '|' . $timestamp)
         );
-
-        var_dump($params);exit;
         $url = $this->baseURL . '/api/datasource/heartbeat';
         $request = new RequestCore($url);
         $request->set_method('POST');
