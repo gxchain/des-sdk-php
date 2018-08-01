@@ -38,6 +38,15 @@ $DESMerchantClient->createDataExchangeRequest($testCase, 2, function ($res) use 
 })
 ```
 
+### Datasource
+
+```bash
+<?php
+use GXChain\Client\DESDatasourceClient;
+
+$DESMerchantClient = new DESDatasourceClient();
+```
+
 ## Dev Documents
 
 https://doc.gxb.io/des/
