@@ -44,7 +44,7 @@ $DESMerchantClient->createDataExchangeRequest($testCase, 2, function ($res) use 
 <?php
 use GXChain\Client\DESDatasourceClient;
 
-$DESMerchantClient = new DESDatasourceClient();
+$DESDatasourceClient = new DESDatasourceClient();
 ```
 
 ## Dev Documents
