@@ -15,6 +15,6 @@ $DESMerchantClient->createDataExchangeRequest($testCase, 2, function ($res) use 
     $DESMerchantClient->getResult($requestId, function ($results) {
         echo json_encode($results);
     });
-})
+});
 
 ?>
