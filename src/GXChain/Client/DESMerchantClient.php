@@ -17,9 +17,9 @@ class DESMerchantClient {
     private $baseURL;
     private $timeout;
 
-    public function __construct() {
-        $this->privateKey = Config::PRIVATE_KEY;
-        $this->account_id = Config::ACCOUNT_ID;
+    public function __construct($privateKey, $accountId) {
+        $this->privateKey = $privateKey;
+        $this->account_id = $accountId;
         $this->baseURL = Config::BASE_URL;
     }
 
@@ -165,4 +165,3 @@ class DESMerchantClient {
         $callback($result);
     }
 }
-?>

@@ -15,11 +15,11 @@ class DESDatasourceClient {
     private $baseURL;
     private $queryURL;
 
-    public function __construct() {
-        $this->privateKey = Config::PRIVATE_KEY;
-        $this->account_id = Config::ACCOUNT_ID;
+    public function __construct($privateKey, $accountId, $queryURL) {
+        $this->privateKey = $privateKey;
+        $this->account_id = $accountId;
         $this->baseURL = Config::BASE_URL;
-        $this->queryURL = Config::QUERY_URL;
+        $this->queryURL = $queryURL;
     }
 
     public function heartbeat($products) {
@@ -54,5 +54,3 @@ class DESDatasourceClient {
         return AES::decryptMessage($message, $this->privateKey, $publicKey, $nonce);
     }
 }
-
-?>
