@@ -9,21 +9,15 @@ composer require gxchain/des-sdk-php
 
 ## Usage
 
-### Config
-
-```bash
-<?php
-const ACCOUNT_ID = '1.2.19'; // Account ID
-const PRIVATE_KEY = '5Ka9YjFQtfUUX2Ddnqka...'; // Private Key})
-```
-
 ### Merchant
 
 ```bash
 <?php
 use GXChain\Client\DESMerchantClient;
 
-$DESMerchantClient = new DESMerchantClient();
+$privateKey = '5Ka9YjFQtfUUX2Ddnqka...'; // Private Key})
+$accountId = '1.2.19'; // Account ID
+$DESMerchantClient = new DESMerchantClient($privateKey, $accountId);
 
 $testCase = (object)array(
     'name' => 'XXX',
@@ -43,8 +37,10 @@ $DESMerchantClient->createDataExchangeRequest($testCase, 2, function ($res) use 
 ```bash
 <?php
 use GXChain\Client\DESDatasourceClient;
-
-$DESDatasourceClient = new DESDatasourceClient();
+$privateKey = '5Ka9YjFQtfUUX2Ddnqka...'; // Private Key})
+$accountId = '1.2.19'; // Account ID
+$queryURL = 'https://www.baidu.com/';
+$DESDatasourceClient = new DESDatasourceClient($privateKey, $accountId, $queryURL);
 ```
 
 ## Dev Documents
