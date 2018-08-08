@@ -164,4 +164,113 @@ class DESMerchantClient {
         }
         $callback($result);
     }
+
+    public function createDataExchangeRequestSync($params, $productId) {
+
+        $Signature = new Signature();
+        $Validator = new Validator();
+        $prod = $this->getProduct($productId);
+        $reqBody = array();
+        $filteredParams = $Validator->validate($params, $prod->product->input);
+        $bodyParam = array('params' => $filteredParams, 'timestamp' => time());
+        $expiration = time() + Config::DEFAULT_TIMEOUT;
+        foreach ($prod->onlineDatasources as $datasource) {
+
+            $byteDataArr = array(
+                'byteFrom'       => $Signature->account($this->account_id),
+                'byteTo'         => $Signature->account($datasource->accountId),
+                'byteProxy'      => $Signature->account($prod->des->accountId),
+                'byteAmount'     => $Signature->amount($prod->product->price->amount, $prod->product->price->assetId),
+                'bytePercent'    => $Signature->percent($prod->des->percent),
+                'byteMemoLength' => $Signature->memoLength(strlen(md5(json_encode($bodyParam, 320)))),
+                'byteMemo'       => $Signature->memo(md5(json_encode($bodyParam, 320))),
+                'byteExpiration'       => $Signature->dateTime($expiration),
+                'byteSignatures' => [0]
+            );
+
+            $byteArr = array_merge(
+                $byteDataArr['byteFrom'],
+                $byteDataArr['byteTo'],
+                $byteDataArr['byteProxy'],
+                $byteDataArr['byteAmount'],
+                $byteDataArr['bytePercent'],
+                $byteDataArr['byteMemoLength'],
+                $byteDataArr['byteMemo'],
+                $byteDataArr['byteExpiration'],
+                $byteDataArr['byteSignatures']
+            );
+
+            $signatures = PrivateKey::fromWif($this->privateKey)->sign($byteArr);
+            $nonce = Utils::getRandCode();
+
+            array_push($reqBody, array(
+                'params' => Aes::encryptMessage($bodyParam, $this->privateKey, $datasource->publicKey , $nonce),
+                'nonce' => $nonce,
+                'requestParams' => array(
+                    'from' => $this->account_id,
+                    'to' => $datasource->accountId,
+                    'proxyAccount' => $prod->des->accountId,
+                    'percent' => $prod->des->percent,
+                    'amount' => array('amount' => $prod->product->price->amount, 'assetId' => $prod->product->price->assetId),
+                    'expiration' => $expiration,
+                    'memo' => md5(json_encode($bodyParam, 320)),
+                    'signatures' => [$signatures]
+                )
+            ));
+        }
+        $url = $this->baseURL . "/api/request/create/" . $productId;
+        $request = new RequestCore($url);
+        $request->set_method('POST');
+        $request->add_header('Content-Type', 'application/json');
+        $request->set_body(json_encode($reqBody));
+        $request->send_request();
+        $res = new ResponseCore($request->get_response_header(), $request->get_response_body(), $request->get_response_code());
+        $output = json_decode($res->body);
+        return $this->getResultSync($output->request_id);
+    }
+
+    public function getResultSync($requestId, $timeout = 8000) {
+        $start = time();
+        $this->timeout = $timeout;
+        while (true) {
+            $url = $this->baseURL . "/api/request/$requestId";
+            $request = new RequestCore($url);
+            $request->set_method('GET');
+            $request->send_request();
+            $res = new ResponseCore($request->get_response_header(), $request->get_response_body(), $request->get_response_code());
+            if ($res->isOK()) {
+                $latestResult = json_decode($res->body);
+                if ($latestResult && $latestResult->status !== "IN_PROGRESS") {
+                    return $this->decryptResultSync($latestResult);
+                } else {
+                    if (time() - $start < $this->timeout) {
+                        sleep(60 / 1000 );
+                    } else {
+                        return $this->decryptResultSync($latestResult);
+                    }
+                }
+            } else {
+                if (time() - $start < $this->timeout) {
+                    sleep(60 / 1000 );
+                } else {
+                    return $this->decryptResultSync($latestResult);
+                }
+            }
+        }
+    }
+
+    public function decryptResultSync($result) {
+        if ($result && $result->datasources) {
+            $newArr = array();
+            foreach ($result->datasources as $item) {
+                $newItem = $item;
+                if ($newItem->status === "SUCCESS") {
+                    $newItem->data = json_decode(Aes::decryptMessage($newItem->data, $this->privateKey, $newItem->datasourcePublicKey, $newItem->nonce));
+                }
+                array_push($newArr, $newItem);
+            }
+            $result->datasources = $newArr;
+        }
+        return $result;
+    }
 }
