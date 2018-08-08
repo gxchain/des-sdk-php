@@ -33,7 +33,8 @@ $DESMerchantClient->createDataExchangeRequest($testCase, 2, function ($res) use 
 });
 
 // Sync
-$results = $DESMerchantClient->createDataExchangeRequestSync($testCase, 2);
+$res = $DESMerchantClient->createDataExchangeRequestSync($testCase, 2);
+$results = $DESMerchantClient->getResultSync($res->request_id);
 echo json_encode($results);
 ```
 

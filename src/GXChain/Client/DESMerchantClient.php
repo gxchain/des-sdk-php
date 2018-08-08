@@ -226,7 +226,7 @@ class DESMerchantClient {
         $request->send_request();
         $res = new ResponseCore($request->get_response_header(), $request->get_response_body(), $request->get_response_code());
         $output = json_decode($res->body);
-        return $this->getResultSync($output->request_id);
+        return $output;
     }
 
     public function getResultSync($requestId, $timeout = 8000) {
