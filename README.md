@@ -24,12 +24,17 @@ $testCase = (object)array(
     'idcard' => 'XXXXXXXXXXXXXXXXXX'
 );
 
+// Async
 $DESMerchantClient->createDataExchangeRequest($testCase, 2, function ($res) use ($DESMerchantClient) {
     $requestId = $res->request_id;
     $DESMerchantClient->getResult($requestId, function ($results) {
         echo json_encode($results);
     });
 });
+
+// Sync
+$results = $DESMerchantClient->createDataExchangeRequestSync($testCase, 2);
+echo json_encode($results);
 ```
 
 ### Datasource
