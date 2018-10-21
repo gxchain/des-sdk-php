@@ -13,14 +13,22 @@ $testCase = (object)array(
 );
 
 // 异步调用
-$DESMerchantClient->createDataExchangeRequest($testCase, 2, function ($res) use ($DESMerchantClient) {
-    $requestId = $res->request_id;
-    $DESMerchantClient->getResult($requestId, function ($results) {
-        echo json_encode($results);
-    });
+$DESMerchantClient->createDataExchangeRequest($testCase, 3, function ($res) use ($DESMerchantClient) {
+    if ($res->request_id) {
+        $requestId = $res->request_id;
+        $DESMerchantClient->getResult($requestId, function ($results) {
+            echo json_encode($results);
+        });
+    } else {
+        echo json_encode($res);
+    }
 });
 
 // 同步调用
-$res = $DESMerchantClient->createDataExchangeRequestSync($testCase, 2);
-$results = $DESMerchantClient->getResultSync($res->request_id);
-echo json_encode($results);
+$res = $DESMerchantClient->createDataExchangeRequestSync($testCase, 3);
+if ($res->request_id) {
+    $results = $DESMerchantClient->getResultSync($res->request_id);
+    echo json_encode($results);
+} else {
+    echo json_encode($res);
+}
